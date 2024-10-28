@@ -1,0 +1,12 @@
+#!/bin/bash
+for file in $(find / -type f -perm 4000 >2/dev/null); do
+    echo "removing SUID bit from $file"
+    chmod u-s "$file"
+done
+for file in $(find / -type f -perm 2000 >2/dev/null); do
+    echo "removing SGID bit from $file"
+    chmod g-s "$file"
+done
+for file in $(find / -type f -perm -o=w 2>/dev/null); do
+    chmod o-w "$file"
+done
