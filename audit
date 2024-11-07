@@ -1,0 +1,9 @@
+sudo apt-get install auditd -y
+sudo systemctl start auditd
+sudo systemctl enable auditd
+
+sudo auditctl -a always,exit -F perm=x -F auid>=1000 -F dir=/usr -F dir=/etc -F dir=/bin -k suid_monitor
+sudo auditctl -w /etc/passwd -p rwxa -k passwd_changes
+sudo auditctl -w /etc/group -p rwxa -k group_changes
+sudo auditctl -w /etc/shadow -p rwxa -k passwd_changes
+
