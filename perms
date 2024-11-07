@@ -8,5 +8,6 @@ for file in $(find / -type f -perm 2000 >2/dev/null); do
     chmod g-s "$file"
 done
 for file in $(find / -type f -perm -o=w 2>/dev/null); do
+    echo "removing world-writables from $file"
     chmod o-w "$file"
 done
