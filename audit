@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo apt-get install auditd -y
 sudo systemctl start auditd
 sudo systemctl enable auditd
