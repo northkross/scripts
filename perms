@@ -1,9 +1,20 @@
 #!/bin/bash
+touch /etc/whitelist
+echo /usr/bin/passwd >> /etc/whitelist
+echo /usr/bin/sudo >> /etc/whitelist
+echo /bin/ping >> /etc/whitelist
+
 find / -perm /6000 2>/dev/null | while read -r file; do
-    echo "removing SUID or SGID bit from $file"
-    chmod u-s,g-s "$file"
+if ! grep -qx "$file" "$WHITELIST"; then
+        echo "removing SUID or SGID bit from $file"
+        chmod u-s,g-s "$file"
+    else
+        echo "Keeping SUID or SGID bit for essential file: $file"
+    fi
 done
 find / -perm -o=w 2>/dev/null | while read -r file; do
     echo "removing world-writables from $file"
     chmod o-w "$file"
 done
+
+rm /etc/whitelist
