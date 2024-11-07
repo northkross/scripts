@@ -1,13 +1,9 @@
 #!/bin/bash
-for file in $(find / -type f -perm 4000 2>/dev/null); do
-    echo "removing SUID bit from $file"
-    chmod u-s "$file"
+find / -perm /6000 2>/dev/null | while read -r file; do
+    echo "removing SUID or SGID bit from $file"
+    chmod u-s,g-s "$file"
 done
-for file in $(find / -type f -perm 2000 2>/dev/null); do
-    echo "removing SGID bit from $file"
-    chmod g-s "$file"
-done
-for file in $(find / -type f -perm -o=w 2>/dev/null); do
+find / -perm -o=w 2>/dev/null | while read -r file; do
     echo "removing world-writables from $file"
     chmod o-w "$file"
 done
