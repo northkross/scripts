@@ -28,3 +28,17 @@ done
 # Optionally remove the whitelist file if it should be temporary
 rm "$WHITELIST"
 
+echo "current perms for passwd, shadow, and group are: "
+ls -l /etc/passwd /etc/group /etc/shadow
+
+chmod 644 /etc/passwd
+chown root:root /etc/passwd
+
+chmod 644 /etc/group
+chown root:root /etc/group
+
+chmod 640 /etc/shadow
+chown root:shadow /etc/shadow
+
+echo "new perms for passwd, shadow, and group are: "
+ls -l /etc/passwd /etc/group /etc/shadow
