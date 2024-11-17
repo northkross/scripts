@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Define the authorized users file
+AUTHORIZED_USERS="/etc/authorized_users"
+
+# Create a list of current system users (excluding system accounts)
+CURRENT_USERS=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd)
+
+# Create the authorized users file if it doesn't exist
+if [ ! -f "$AUTHORIZED_USERS" ]; then
+    echo "Creating authorized users file at $AUTHORIZED_USERS"
+    touch "$AUTHORIZED_USERS"
+    echo "root" > "$AUTHORIZED_USERS"  # Default root user
+    echo "Please populate $AUTHORIZED_USERS with authorized usernames."
+    exit 1
+fi
+
+# Check for unauthorized users
+for user in $CURRENT_USERS; do
+    if ! grep -qx "$user" "$AUTHORIZED_USERS"; then
+        echo "Unauthorized user detected: $user"
+
+        # Action to take for unauthorized users
+        # Uncomment one of the following lines based on your requirements:
+
+        # Lock the user account
+        # sudo usermod -L "$user"
+
+        # Remove the user account (use with caution!)
+        # sudo userdel -r "$user"
+    fi
+done
+
+echo "User verification complete."
+
