@@ -10,3 +10,6 @@ sudo auditctl -w /etc/passwd -p rwxa -k passwd_changes
 sudo auditctl -w /etc/group -p rwxa -k group_changes
 sudo auditctl -w /etc/shadow -p rwxa -k passwd_changes
 
+se status
+sed -i 's/^SELINUX=.*/SELINUX=enfocing/' /etc/selinux/config
+echo "SELINUX set to enforcing"
