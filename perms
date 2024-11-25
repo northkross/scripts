@@ -42,3 +42,6 @@ chown root:shadow /etc/shadow
 
 echo "new perms for passwd, shadow, and group are: "
 ls -l /etc/passwd /etc/group /etc/shadow
+
+echo "underprivalidged user or group may own a configuaation file:"
+ls -l /etc/ | awk '{print $3":"$4,$9}' | grep -v "^root:root" | grep -v "^:"
