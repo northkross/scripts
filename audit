@@ -13,3 +13,6 @@ sudo auditctl -w /etc/shadow -p rwxa -k passwd_changes
 se status
 sed -i 's/^SELINUX=.*/SELINUX=enfocing/' /etc/selinux/config
 echo "SELINUX set to enforcing"
+
+sed -i 's/^KillUserProcesses=.*/KillUserProcesses=yes/' /etc/systemd/logind.conf
+echo "Processes are killed on user logout"
