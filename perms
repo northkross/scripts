@@ -21,6 +21,12 @@ done
 
 # Remove world-writable permissions
 find / -perm -o=w 2>/dev/null | while read -r file; do
+    # Skip files in /tmp, /var/tmp, and /dev/shm
+    if [[ "$file" == /tmp/* || "$file" == /var/tmp/* || "$file" == /dev/shm/* ]]; then
+        echo "Skipping file in a temporary directory: $file"
+        continue
+    fi
+    
     echo "Removing world-writable permissions from $file"
     chmod o-w "$file"
 done
