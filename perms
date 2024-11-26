@@ -31,8 +31,35 @@ find / -perm -o=w 2>/dev/null | while read -r file; do
     chmod o-w "$file"
 done
 
+
+
 # Optionally remove the whitelist file if it should be temporary
 rm "$WHITELIST"
+
+DIRECTORIES=(
+    "/tmp"
+    "/var/tmp"
+    "/dev/shm"
+)
+
+echo "Setting sticky bit on specified directories..."
+
+# Loop through each directory and apply the sticky bit
+for dir in "${DIRECTORIES[@]}"; do
+    if [ -d "$dir" ]; then
+        current_perms=$(stat -c "%a" "$dir")
+        if (( current_perms % 10 != 7 )); then
+            chmod 1777 "$dir"
+            echo "Sticky bit set on $dir with permissions 1777."
+        else
+            echo "Sticky bit already set on $dir."
+        fi
+    else
+        echo "Directory $dir does not exist."
+    fi
+done
+
+echo "Sticky bit configuration completed."
 
 echo "current perms for passwd, shadow, and group are: "
 ls -l /etc/passwd /etc/group /etc/shadow
