@@ -61,6 +61,9 @@ done
 
 echo "Sticky bit configuration completed."
 
+chmod 600 /var/lib/pgsql/data/postgresql.conf
+chmod 600 /var/lib/pgsql/data/pg_hba.conf
+
 echo "current perms for passwd, shadow, and group are: "
 ls -l /etc/passwd /etc/group /etc/shadow
 
