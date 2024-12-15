@@ -16,3 +16,9 @@ echo "SELINUX set to enforcing"
 
 sed -i 's/^KillUserProcesses=.*/KillUserProcesses=yes/' /etc/systemd/logind.conf
 echo "Processes are killed on user logout"
+
+iptables -t filter --append INPUT -j DROP 
+iptables -t filter --delete INPUT 2 
+iptables -t filter --check INPUT -s 192.168.1.123 -j DROP 
+iptables -t filter -A INPUT -p udp -j DROP 
+iptables -t filter -A INPUT -s 192.168.1.230 -j ACCEPT 
