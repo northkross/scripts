@@ -1,1 +1,160 @@
+#!/bin/bash
+
+echo "Hello! Welcome to the DallasBot!"
+
+
+echo "Applying automatic updates..."
+
+if command -v apt &> /dev/null; then
+  if ! dpkg -l | grep -qw unattended-upgrades; then
+    echo "Installing unattended-upgrades..."
+    apt update
+    apt install -y unattended-upgrades
+  fi
+
+  AUTO_UPGRADES_FILE="/etc/apt/apt.conf.d/20auto-upgrades"
+
+  if [ -f "$AUTO_UPGRADES_FILE" ]; then
+    sed -i 's/^APT::Periodic::Update-Package-Lists "0"/APT::Periodic::Update-Package-Lists "1"/' "$AUTO_UPGRADES_FILE"
+    sed -i 's/^APT::Periodic::Unattended-Upgrade "0"/APT::Periodic::Unattended-Upgrade "1"/' "$AUTO_UPGRADES_FILE"
+  fi
+  if dpkg -l | grep -qw ufw; then
+    ufw enable
+    ufw logging high
+    ufw default deny
+    fi
+  fi
+  if dpkg -l | grep -qw firewalld; then
+    systemctl start firewalld
+    systemctl enable firewalld
+    fi
+  fi
+
+if command -v dnf &> /dev/null; then
+  if ! dnf list installed | grep -qw dnf-automatic; then
+    echo "Installing dnf-automatic..."
+    dnf install -y dnf-automatic
+  fi
+
+  AUTO_CONF_FILE="/etc/dnf/automatic.conf"
+
+  if [ -f "$AUTO_CONF_FILE" ]; then
+    sed -i 's/^apply_updates = no/apply_updates = yes/' "$AUTO_CONF_FILE"
+    systemctl enable dnf-automatic.timer
+    systemctl start dnf-automatic.timer
+  fi
+ if dnf list installed | grep -qw ufw; then
+    ufw enable
+    ufw logging high
+    ufw default deny
+  fi
+ if dnf list installed | grep -qw firewalld; then
+    ufw enable
+    ufw logging high
+    ufw default deny
+  fi
+fi
+
+
+# Initialize arrays
+declare -a Admins
+declare -a Users
+declare -a Services
+
+# === Administrators ===
+admincount=0
+echo "What are your Authorized Administrators? Input 1 by 1. Type 0 when done."
+while true; do
+  read -p "Administrator: " input
+  if [[ "$input" == "0" ]]; then
+    break
+  fi
+  Admins[$admincount]="$input"
+  ((admincount++))
+  echo "Who else?"
+done
+
+# === Users ===
+usercount=0
+echo "What are your other Authorized Users? Type 0 when done."
+while true; do
+  read -p "User: " input
+  if [[ "$input" == "0" ]]; then
+    break
+  fi
+  Users[$usercount]="$input"
+  ((usercount++))
+  echo "Who else?"
+done
+
+# === Services ===
+servecount=0
+echo -e "What Services are on your system? Type the corresponding number:\n0 Done\n1 SSH\n2 FTP\n3 Apache2\n4 MySQL\n5 PHP"
+while true; do 
+  read -p "Service: " input
+  if [[ "$input" == "0" ]]; then
+    break
+  fi
+  Services[$servecount]="$input"
+  ((servecount++))
+  echo "What else?"
+done
+
+adminlength=${#Admins[@]}
+userlength=${#Users[@]}
+servicelength=${#Services[@]}
+
+for (( i=0; i<servicelength; i++ ))
+do
+  if [[ "${Services[i]}" == "1" ]]; then
+    echo "Configuring SSH..."
+    if command -v apt &> /dev/null; then
+      ufw allow 22/tcp
+    fi
+    if command -v dnf &> /dev/null; then
+      firewall-cmd --add-port=22/tcp --permanent
+    fi
+  fi
+  if [[ "${Services[i]}" == "2" ]]; then
+    echo "Configuring FTP..."
+    if command -v apt &> /dev/null; then
+      ufw allow 20/tcp
+      ufw allow 21/tcp
+    fi
+    if command -v dnf &> /dev/null; then
+      firewall-cmd --add-port=20/tcp --permanent
+      firewall-cmd --add-port=21/tcp --permanent
+    fi
+  fi
+  if [[ "${Services[i]}" == "3" ]]; then
+    echo "Configuring Apache2..."
+    if command -v apt &> /dev/null; then
+      ufw allow 80/tcp
+      ufw allow 443/tcp
+      ufw allow "Apache Full"
+      ufw allow "Apache Secure"
+    fi
+    if command -v dnf &> /dev/null; then
+      firewall-cmd --add-port=80/tcp --permanent
+      firewall-cmd --add-port=443/tcp --permanent
+    fi
+  fi
+  if [[ "${Services[i]}" == "4" ]]; then
+    echo "Configuring MySQL..."
+    if command -v apt &> /dev/null; then
+      ufw allow 3306/tcp
+    fi
+    if command -v dnf &> /dev/null; then
+      firewall-cmd --add-port=3306/tcp --permanent
+    fi
+  fi
+  fi
+  if [[ "${Services[i]}" == "5" ]]; then
+    echo "Configuring PHP..."
+
+  fi
+  fi
+done
+firewall-cmd --reload
+
 
