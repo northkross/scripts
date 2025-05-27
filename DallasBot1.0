@@ -3,6 +3,7 @@
 echo "Hello! Welcome to the DallasBot!"
 
 
+
 echo "Applying automatic updates..."
 
 if command -v apt &> /dev/null; then
@@ -108,6 +109,23 @@ for (( i=0; i<servicelength; i++ ))
 do
   if [[ "${Services[i]}" == "1" ]]; then
     echo "Configuring SSH..."
+    sed -i 's/^#*Port .*/Port 22/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*AddressFamily .*/AddressFamily any/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*SyslogFacility .*/SyslogFacility AUTH/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*LogLevel .*/LogLevel INFO/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*LoginGraceTime .*/LoginGraceTime 30/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PermitRootLogin .*/PermitRootLogin no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*StrictModes .*/StrictModes yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*MaxAuthTries .*/MaxAuthTries 3/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*MaxSessions .*/MaxSessions 2/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PubkeyAuthentication .*/PubkeyAuthentication yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*HostbasedAuthentication .*/HostbasedAuthentication no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*IgnoreUserKnownHosts .*/IgnoreUserKnownHosts yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*IgnoreRhosts .*/IgnoreRhosts yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PasswordAuthentication .*/PasswordAuthentication yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PermitEmptyPasswords .*/PermitEmptyPasswords no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*UsePAM .*/UsePAM yes/' "/etc/ssh/sshd_config"
+    grep -q "^Protocol 2" /etc/ssh/sshd_config || echo "Protocol 2" >> /etc/ssh/sshd_config
     if command -v apt &> /dev/null; then
       ufw allow 22/tcp
     fi
@@ -156,5 +174,15 @@ do
   fi
 done
 firewall-cmd --reload
+
+rm /etc/sysctl.conf
+
+curl -o /etc/sysctl.conf https://raw.githubusercontent.com/northkross/Sysctl/refs/heads/main/conf 2>/dev/null
+if [ $? -ne 0 ]; then
+  echo "Failed to download sysctl.conf"
+  exit 1
+fi
+
+
 
 
