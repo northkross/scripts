@@ -2,8 +2,7 @@
 
 echo "Hello! Welcome to the DallasBot!"
 
-
-
+# === Auto Updates ===
 echo "Applying automatic updates..."
 
 if command -v apt &> /dev/null; then
@@ -16,19 +15,9 @@ if command -v apt &> /dev/null; then
   AUTO_UPGRADES_FILE="/etc/apt/apt.conf.d/20auto-upgrades"
 
   if [ -f "$AUTO_UPGRADES_FILE" ]; then
+    echo "Enabling Unattended Upgrades..."
     sed -i 's/^APT::Periodic::Update-Package-Lists "0"/APT::Periodic::Update-Package-Lists "1"/' "$AUTO_UPGRADES_FILE"
     sed -i 's/^APT::Periodic::Unattended-Upgrade "0"/APT::Periodic::Unattended-Upgrade "1"/' "$AUTO_UPGRADES_FILE"
-  fi
-  if dpkg -l | grep -qw ufw; then
-    ufw enable
-    ufw logging high
-    ufw default deny
-    fi
-  fi
-  if dpkg -l | grep -qw firewalld; then
-    systemctl start firewalld
-    systemctl enable firewalld
-    fi
   fi
 
 if command -v dnf &> /dev/null; then
@@ -40,19 +29,42 @@ if command -v dnf &> /dev/null; then
   AUTO_CONF_FILE="/etc/dnf/automatic.conf"
 
   if [ -f "$AUTO_CONF_FILE" ]; then
+    echo "Enabling dnf auto updates..."
     sed -i 's/^apply_updates = no/apply_updates = yes/' "$AUTO_CONF_FILE"
     systemctl enable dnf-automatic.timer
     systemctl start dnf-automatic.timer
   fi
- if dnf list installed | grep -qw ufw; then
+
+# === Firewall ===
+
+  if dpkg -l | grep -qw ufw; then
+    echo "Enabling Firewall..."
     ufw enable
+    echo "Configuring Firewall..."
+    ufw logging high
+    ufw default deny
+    fi
+  fi
+  if dpkg -l | grep -qw firewalld; then
+    echo "Starting Firewall..."
+    systemctl start firewalld
+    echo "Enabling Firewall..."
+    systemctl enable firewalld
+    fi
+  fi
+
+ if dnf list installed | grep -qw ufw; then
+    echo "Enabling Firewall..."
+    ufw enable
+    echo "Configuring Firewall..."
     ufw logging high
     ufw default deny
   fi
  if dnf list installed | grep -qw firewalld; then
-    ufw enable
-    ufw logging high
-    ufw default deny
+    echo "Starting Firewall..."
+    systemctl start firewalld
+    echo "Enabling Firewall..."
+    systemctl enable firewalld
   fi
 fi
 
@@ -107,6 +119,7 @@ servicelength=${#Services[@]}
 
 for (( i=0; i<servicelength; i++ ))
 do
+  # === SSH ===
   if [[ "${Services[i]}" == "1" ]]; then
     echo "Configuring SSH..."
     sed -i 's/^#*Port .*/Port 22/' "/etc/ssh/sshd_config"
@@ -141,6 +154,7 @@ do
     fi
   fi
   if [[ "${Services[i]}" == "2" ]]; then
+    # === FTP ===
     echo "Configuring FTP..."
     sed -i 's/^#*listen= .*/listen=YES/' "/etc/vsftpd.conf"
     sed -i 's/^#*listen_ipv6= .*/listen_ipv6=NO/' "/etc/vsftpd.conf"
@@ -179,6 +193,7 @@ do
     fi
   fi
   if [[ "${Services[i]}" == "3" ]]; then
+    # === Apache2 ===
     echo "Configuring Apache2..."
     sed -i 's/^#*Timeout .*/Timeout 300/' "/etc/apache2/apache2.conf"
     sed -i 's/^#*KeepAlive .*/KeepAlive On/' "/etc/apache2/apache2.conf"
@@ -221,6 +236,7 @@ do
     fi
   fi
   if [[ "${Services[i]}" == "4" ]]; then
+    # === MySQL ===
     echo "Configuring MySQL..."
     if command -v apt &> /dev/null; then
       ufw allow 3306/tcp
@@ -231,6 +247,7 @@ do
   fi
   fi
   if [[ "${Services[i]}" == "5" ]]; then
+    # === PHP ===
     echo "Configuring PHP..."
 
   fi
@@ -238,14 +255,139 @@ do
 done
 firewall-cmd --reload
 
+# === Sysctl ===
+
 rm /etc/sysctl.conf
 
+echo "Reconfiguring Sysctl..."
 curl -o /etc/sysctl.conf https://raw.githubusercontent.com/northkross/Sysctl/refs/heads/main/conf 2>/dev/null
 if [ $? -ne 0 ]; then
   echo "Failed to download sysctl.conf"
   exit 1
 fi
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 
+sysctl -w net.ipv6.conf.default.disable_ipv6=1 
+sysctl -w net.ipv6.route.flush=1 
+sysctl –w kernel.unprivileged_bpf_disabled = 1 
+echo "Reloading Sysctl..."
+sysctl -p 
 
+# === Forkbomb ===
 
+echo "Enabling Forkbomb Protection..."
+grep -q "^tmpfs /tmp tmpfs defaults,noexec,nosuid 0 0 " /etc/fstab || echo "tmpfs /tmp tmpfs defaults,noexec,nosuid 0 0 " >> /etc/fstab
+grep -q "^* hard nproc 300" /etc/security/limits.conf || echo "* hard nproc 300" >> /etc/security/limits.conf
 
+# === Malware ===
 
+echo "Eliminating Malware..."
+if command -v apt &> /dev/null; then
+  if ! dpkg -l | grep -qw nmap; then
+    apt purge nmap* -y
+  if ! dpkg -l | grep -qw ncat; then
+    apt purge ncat* -y
+  if ! dpkg -l | grep -qw netcat; then
+    apt purge netcat* -y
+  if ! dpkg -l | grep -qw aircrack; then
+    apt purge aircrack* -y
+  if ! dpkg -l | grep -qw ophcrack; then
+    apt purge ophcrack* -y
+  if ! dpkg -l | grep -qw wireshark; then
+    apt purge wireshark* -y
+  if ! dpkg -l | grep -qw ettercap; then
+    apt purge ettercap* -y
+  if ! dpkg -l | grep -qw cawsay; then
+    apt purge cowsay* -y
+  if ! dpkg -l | grep -qw logkeys; then
+    apt purge logkeys* -y
+  if ! dpkg -l | grep -qw telnet; then
+    apt purge telnet* -y
+  if ! dpkg -l | grep -qw john; then
+    apt purge john* -y
+  if ! dpkg -l | grep -qw hydra; then
+    apt purge hydra*
+  if ! dpkg -l | grep -qw zenmap; then
+    apt purge zenmap*
+  if ! dpkg -l | grep -qw xcawsay; then
+    apt purge xcowsay*
+  if ! dpkg -l | grep -qw deluge; then
+    apt purge deluge*
+  if ! dpkg -l | grep -qw freeciv; then
+    apt purge freeciv*
+  if ! dpkg -l | grep -qw minetest; then
+    apt purge minetest*
+  if ! dpkg -l | grep -qw transmission; then
+    apt purge transmission*
+  if ! dpkg -l | grep -qw qbittorrent; then
+    apt purge qbittorrent*
+  if ! dpkg -l | grep -qw 4g8; then
+    apt purge 4g8*
+  if ! dpkg -l | grep -qw sqlmap; then
+    apt purge sqlmap*
+  if ! dpkg -l | grep -qw gobuster; then
+    apt purge gobuster*
+  if ! dpkg -l | grep -qw bind9; then
+    apt purge bind9*
+  if ! dpkg -l | grep -qw empire; then
+    apt purge empire*
+  if ! dpkg -l | grep -qw recon-ng; then
+    apt purge recon-ng*
+  apt autoremove -y
+
+if command -v dnf &> /dev/null; then
+  if ! dnf list installed | grep -qw nmap; then
+    dnf remove nmap* -y
+  if ! dnf list installed | grep -qw ncat; then
+    dnf remove ncat* -y
+  if ! dnf list installed | grep -qw netcat; then
+    dnf remove netcat* -y
+  if ! dnf list installed | grep -qw aircrack; then
+    dnf remove aircrack* -y
+  if ! dnf list installed | grep -qw ophcrack; then
+    dnf remove ophcrack* -y
+  if ! dnf list installed | grep -qw wireshark; then
+    dnf remove wireshark* -y
+  if ! dnf list installed | grep -qw ettercap; then
+    dnf remove ettercap* -y
+  if ! dnf list installed | grep -qw cawsay; then
+    dnf remove cowsay* -y
+  if ! dnf list installed | grep -qw logkeys; then
+    dnf remove logkeys* -y
+  if ! dnf list installed | grep -qw telnet; then
+    dnf remove telnet* -y
+  if ! dnf list installed | grep -qw john; then
+    dnf remove john* -y
+  if ! dnf list installed | grep -qw hydra; then
+    dnf remove hydra*
+  if ! dnf list installed | grep -qw zenmap; then
+    dnf remove zenmap*
+   if ! dnf list installed | grep -qw xcawsay; then
+    dnf remove xcowsay*
+  if ! dnf list installed | grep -qw deluge; then
+    dnf remove deluge*
+  if ! dnf list installed | grep -qw freeciv; then
+    dnf remove freeciv*
+  if ! dnf list installed | grep -qw minetest; then
+    dnf remove minetest*
+  if ! dnf list installed | grep -qw transmission; then
+    dnf remove transmission*
+  if ! dnf list installed | grep -qw qbittorrent; then
+    dnf remove qbittorrent*
+  if ! dnf list installed | grep -qw 4g8; then
+    dnf remove 4g8*
+  if ! dnf list installed | grep -qw sqlmap; then
+    dnf remove sqlmap*
+  if ! dnf list installed | grep -qw gobuster; then
+    dnf remove gobuster*
+  if ! dnf list installed | grep -qw bind9; then
+    dnf remove bind9*
+  if ! dnf list installed | grep -qw empire; then
+    dnf remove empire*
+  if ! dnf list installed | grep -qw recon-ng; then
+    dnf remove recon-ng*
+  dnf autoremove
+
+# === Kernel ===
+echo "Updating Kernel..."
+
+apt-get dist-upgrade
