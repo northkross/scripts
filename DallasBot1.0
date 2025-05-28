@@ -125,6 +125,13 @@ do
     sed -i 's/^#*PasswordAuthentication .*/PasswordAuthentication yes/' "/etc/ssh/sshd_config"
     sed -i 's/^#*PermitEmptyPasswords .*/PermitEmptyPasswords no/' "/etc/ssh/sshd_config"
     sed -i 's/^#*UsePAM .*/UsePAM yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*X11Forwarding .*/X11Forwarding no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PrintLastLog .*/PrintLastLog yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*Compression .*/Compression no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*TCPKeepAlive .*/TCPKeepAlive yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*PermitUserEnvironment .*/PermitUserEnvironment no/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*UsePrivilegeSeparation .*/UsePrivilegeSeparation yes/' "/etc/ssh/sshd_config"
+    sed -i 's/^#*UseDNS .*/UseDNS no/' "/etc/ssh/sshd_config"
     grep -q "^Protocol 2" /etc/ssh/sshd_config || echo "Protocol 2" >> /etc/ssh/sshd_config
     if command -v apt &> /dev/null; then
       ufw allow 22/tcp
@@ -135,6 +142,33 @@ do
   fi
   if [[ "${Services[i]}" == "2" ]]; then
     echo "Configuring FTP..."
+    sed -i 's/^#*listen= .*/listen=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*listen_ipv6= .*/listen_ipv6=NO/' "/etc/vsftpd.conf"
+    sed -i 's/^#*anonymous_enable= .*/anonymous_enable=NO/' "/etc/vsftpd.conf"
+    sed -i 's/^#*local_enable= .*/local_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*write_enable= .*/write_enable=NO/' "/etc/vsftpd.conf"
+    sed -i 's/^#*anon_upload_enable= .*/anon_upload_enable=NO/' "/etc/vsftpd.conf"
+    sed -i 's/^#*anon_mkdir_write_enable= .*/anon_mkdir_write_enable=NO/' "/etc/vsftpd.conf"
+    sed -i 's/^#*xferlog_enable= .*/xferlog_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*connect_from_port_20= .*/connect_from_port_20=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*chown_uploads= .*/chown_uploads=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*idle_session_timeout= .*/idle_session_timeout=600/' "/etc/vsftpd.conf"
+    sed -i 's/^#*data_connection_timeout= .*/data_connection_timeout=120/' "/etc/vsftpd.conf"
+    sed -i 's/^#*async_abor_enable= .*/async_abor_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*ascii_upload_enable= .*/ascii_upload_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*ascii_download_enable= .*/ascii_download_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*deny_email_enable= .*/deny_email_enable=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*chroot_local_user= .*/chroot_local_user=YES/' "/etc/vsftpd.conf"
+    sed -i 's/^#*chroot_list_enable= .*/chroot_list_enable=YES/' "/etc/vsftpd.conf"
+    grep -q "^ssl_enable" /etc/vsftpd.conf || echo "ssl_enable=YES" >> /etc/vsftpd.conf
+    grep -q "^allow_anon_ssl" /etc/vsftpd.conf || echo "allow_anon_ssl=NO" >> /etc/vsftpd.conf
+    grep -q "^force_local_data_ssl=" /etc/vsftpd.conf || echo "force_local_data_ssl=YES" >> /etc/vsftpd.conf
+    grep -q "^force_local_logins_ssl=" /etc/vsftpd.conf || echo "force_local_logins_ssl=YES" >> /etc/vsftpd.conf
+    grep -q "^ssl_tlsv1=" /etc/vsftpd.conf || echo "ssl_tlsv1=YES" >> /etc/vsftpd.conf
+    grep -q "^ssl_sslv2=" /etc/vsftpd.conf || echo "ssl_sslv2=NO" >> /etc/vsftpd.conf
+    grep -q "^ssl_sslv3=" /etc/vsftpd.conf || echo "ssl_sslv3=NO" >> /etc/vsftpd.conf
+    grep -q "^require_ssl_reuse=" /etc/vsftpd.conf || echo "require_ssl_reuse=NO" >> /etc/vsftpd.conf
+    grep -q "^ssl_ciphers=" /etc/vsftpd.conf || echo "ssl_ciphers=HIGH" >> /etc/vsftpd.conf
     if command -v apt &> /dev/null; then
       ufw allow 20/tcp
       ufw allow 21/tcp
@@ -146,15 +180,44 @@ do
   fi
   if [[ "${Services[i]}" == "3" ]]; then
     echo "Configuring Apache2..."
+    sed -i 's/^#*Timeout .*/Timeout 300/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*KeepAlive .*/KeepAlive On/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*MaxKeepAliveRequests .*/MaxKeepAliveRequests 100/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*KeepAliveTimeout .*/KeepAliveTimeout 5/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*HostnameLookups .*/HostnameLookups Off/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*LogLevel .*/LogLevel warn/' "/etc/apache2/apache2.conf"
+    sed -i 's/^#*ServerTokens .*/ServerTokens Prod/' "/etc/apache2/conf-enabled/security.conf"
+    sed -i 's/^#*ServerSignature .*/ServerSignature Off/' "/etc/apache2/conf-enabled/security.conf"
+    sed -i 's/^#*TraceEnable .*/TraceEnable Off/' "/etc/apache2/conf-enabled/security.conf"
+    grep -q "^Header unset ETag" /etc/apache2/conf-enabled/security.conf || echo "Header unset ETag" >> /etc/apache2/conf-enabled/security.conf
+    grep -q "^FileETag none" /etc/apache2/conf-enabled/security.conf || echo "FileETag None" >> /etc/apache2/conf-enabled/security.conf
+    sed -i 's/^#*SSLProtocol .*SSLProtocol all +TLSv1.2/' "/etc/apache2/mods-available/ssl.conf"
+    sed -i 's/^#*SSLCipherSuite .*/SSLCipherSuite HIGH:!aNULL/' "/etc/apache2/mods-available/ssl.conf"
+    sed -i 's/^#*SSLSessionCacheTimeout .*/SSLSessionCacheTimeout  300/' "/etc/apache2/mods-available/ssl.conf"
+    sed -i 's/^#*SSLHonorCipherOrder .*/SSLHonorCipherOrder On/' "/etc/apache2/mods-available/ssl.conf"
+    sed -i 's/^#*SSLInsecureRenegotiation .*/SSLInsecureRenegotiation On/' "/etc/apache2/mods-available/ssl.conf"
+    sed -i 's/^#*SSLStrictSNIVHostCheck .*/SSLStrictSNIVHostCheck On/' "/etc/apache2/mods-available/ssl.conf"
     if command -v apt &> /dev/null; then
       ufw allow 80/tcp
       ufw allow 443/tcp
       ufw allow "Apache Full"
       ufw allow "Apache Secure"
+      apt install libapache2-mod-security2
+      apt install libapache2-mod-evasive
+      a2enmod security2
+      a2enmod headers
+      a2enmod reqtimeout
+      a2enmod evasive
     fi
     if command -v dnf &> /dev/null; then
       firewall-cmd --add-port=80/tcp --permanent
       firewall-cmd --add-port=443/tcp --permanent
+      dnf install libapache2-mod-security2
+      dnf install libapache2-mod-evasive
+      a2enmod security2
+      a2enmod headers
+      a2enmod reqtimeout
+      a2enmod evasive
     fi
   fi
   if [[ "${Services[i]}" == "4" ]]; then
