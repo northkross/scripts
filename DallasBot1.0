@@ -281,111 +281,165 @@ grep -q "^* hard nproc 300" /etc/security/limits.conf || echo "* hard nproc 300"
 # === Malware ===
 
 echo "Eliminating Malware..."
+
 if command -v apt &> /dev/null; then
-  if ! dpkg -l | grep -qw nmap; then
-    apt purge nmap* -y
-  if ! dpkg -l | grep -qw ncat; then
-    apt purge ncat* -y
-  if ! dpkg -l | grep -qw netcat; then
-    apt purge netcat* -y
-  if ! dpkg -l | grep -qw aircrack; then
-    apt purge aircrack* -y
-  if ! dpkg -l | grep -qw ophcrack; then
-    apt purge ophcrack* -y
-  if ! dpkg -l | grep -qw wireshark; then
-    apt purge wireshark* -y
-  if ! dpkg -l | grep -qw ettercap; then
-    apt purge ettercap* -y
-  if ! dpkg -l | grep -qw cawsay; then
-    apt purge cowsay* -y
-  if ! dpkg -l | grep -qw logkeys; then
-    apt purge logkeys* -y
-  if ! dpkg -l | grep -qw telnet; then
-    apt purge telnet* -y
-  if ! dpkg -l | grep -qw john; then
-    apt purge john* -y
-  if ! dpkg -l | grep -qw hydra; then
-    apt purge hydra*
-  if ! dpkg -l | grep -qw zenmap; then
-    apt purge zenmap*
-  if ! dpkg -l | grep -qw xcawsay; then
-    apt purge xcowsay*
-  if ! dpkg -l | grep -qw deluge; then
-    apt purge deluge*
-  if ! dpkg -l | grep -qw freeciv; then
-    apt purge freeciv*
-  if ! dpkg -l | grep -qw minetest; then
-    apt purge minetest*
-  if ! dpkg -l | grep -qw transmission; then
-    apt purge transmission*
-  if ! dpkg -l | grep -qw qbittorrent; then
-    apt purge qbittorrent*
-  if ! dpkg -l | grep -qw 4g8; then
-    apt purge 4g8*
-  if ! dpkg -l | grep -qw sqlmap; then
-    apt purge sqlmap*
-  if ! dpkg -l | grep -qw gobuster; then
-    apt purge gobuster*
-  if ! dpkg -l | grep -qw bind9; then
-    apt purge bind9*
-  if ! dpkg -l | grep -qw empire; then
-    apt purge empire*
-  if ! dpkg -l | grep -qw recon-ng; then
-    apt purge recon-ng*
+  if dpkg -l | grep -qw nmap; then
+    apt purge nmap\* -y
+  fi
+  if dpkg -l | grep -qw ncat; then
+    apt purge ncat\* -y
+  fi
+  if dpkg -l | grep -qw netcat; then
+    apt purge netcat\* -y
+  fi
+  if dpkg -l | grep -qw aircrack; then
+    apt purge aircrack\* -y
+  fi
+  if dpkg -l | grep -qw ophcrack; then
+    apt purge ophcrack\* -y
+  fi
+  if dpkg -l | grep -qw wireshark; then
+    apt purge wireshark\* -y
+  fi
+  if dpkg -l | grep -qw ettercap; then
+    apt purge ettercap\* -y
+  fi
+  if dpkg -l | grep -qw cowsay; then
+    apt purge cowsay\* -y
+  fi
+  if dpkg -l | grep -qw logkeys; then
+    apt purge logkeys\* -y
+  fi
+  if dpkg -l | grep -qw telnet; then
+    apt purge telnet\* -y
+  fi
+  if dpkg -l | grep -qw john; then
+    apt purge john\* -y
+  fi
+  if dpkg -l | grep -qw hydra; then
+    apt purge hydra\* -y
+  fi
+  if dpkg -l | grep -qw zenmap; then
+    apt purge zenmap\* -y
+  fi
+  if dpkg -l | grep -qw xcowsay; then
+    apt purge xcowsay\* -y
+  fi
+  if dpkg -l | grep -qw deluge; then
+    apt purge deluge\* -y
+  fi
+  if dpkg -l | grep -qw freeciv; then
+    apt purge freeciv\* -y
+  fi
+  if dpkg -l | grep -qw minetest; then
+    apt purge minetest\* -y
+  fi
+  if dpkg -l | grep -qw transmission; then
+    apt purge transmission\* -y
+  fi
+  if dpkg -l | grep -qw qbittorrent; then
+    apt purge qbittorrent\* -y
+  fi
+  if dpkg -l | grep -qw 4g8; then
+    apt purge 4g8\* -y
+  fi
+  if dpkg -l | grep -qw sqlmap; then
+    apt purge sqlmap\* -y
+  fi
+  if dpkg -l | grep -qw gobuster; then
+    apt purge gobuster\* -y
+  fi
+  if dpkg -l | grep -qw bind9; then
+    apt purge bind9\* -y
+  fi
+  if dpkg -l | grep -qw empire; then
+    apt purge empire\* -y
+  fi
+  if dpkg -l | grep -qw recon-ng; then
+    apt purge recon-ng\* -y
+  fi
   apt autoremove -y
+fi
 
 if command -v dnf &> /dev/null; then
-  if ! dnf list installed | grep -qw nmap; then
-    dnf remove nmap* -y
-  if ! dnf list installed | grep -qw ncat; then
-    dnf remove ncat* -y
-  if ! dnf list installed | grep -qw netcat; then
-    dnf remove netcat* -y
-  if ! dnf list installed | grep -qw aircrack; then
-    dnf remove aircrack* -y
-  if ! dnf list installed | grep -qw ophcrack; then
-    dnf remove ophcrack* -y
-  if ! dnf list installed | grep -qw wireshark; then
-    dnf remove wireshark* -y
-  if ! dnf list installed | grep -qw ettercap; then
-    dnf remove ettercap* -y
-  if ! dnf list installed | grep -qw cawsay; then
-    dnf remove cowsay* -y
-  if ! dnf list installed | grep -qw logkeys; then
-    dnf remove logkeys* -y
-  if ! dnf list installed | grep -qw telnet; then
-    dnf remove telnet* -y
-  if ! dnf list installed | grep -qw john; then
-    dnf remove john* -y
-  if ! dnf list installed | grep -qw hydra; then
-    dnf remove hydra*
-  if ! dnf list installed | grep -qw zenmap; then
-    dnf remove zenmap*
-   if ! dnf list installed | grep -qw xcawsay; then
-    dnf remove xcowsay*
-  if ! dnf list installed | grep -qw deluge; then
-    dnf remove deluge*
-  if ! dnf list installed | grep -qw freeciv; then
-    dnf remove freeciv*
-  if ! dnf list installed | grep -qw minetest; then
-    dnf remove minetest*
-  if ! dnf list installed | grep -qw transmission; then
-    dnf remove transmission*
-  if ! dnf list installed | grep -qw qbittorrent; then
-    dnf remove qbittorrent*
-  if ! dnf list installed | grep -qw 4g8; then
-    dnf remove 4g8*
-  if ! dnf list installed | grep -qw sqlmap; then
-    dnf remove sqlmap*
-  if ! dnf list installed | grep -qw gobuster; then
-    dnf remove gobuster*
-  if ! dnf list installed | grep -qw bind9; then
-    dnf remove bind9*
-  if ! dnf list installed | grep -qw empire; then
-    dnf remove empire*
-  if ! dnf list installed | grep -qw recon-ng; then
-    dnf remove recon-ng*
-  dnf autoremove
+  if dnf list installed | grep -qw nmap; then
+    dnf remove nmap\* -y
+  fi
+  if dnf list installed | grep -qw ncat; then
+    dnf remove ncat\* -y
+  fi
+  if dnf list installed | grep -qw netcat; then
+    dnf remove netcat\* -y
+  fi
+  if dnf list installed | grep -qw aircrack; then
+    dnf remove aircrack\* -y
+  fi
+  if dnf list installed | grep -qw ophcrack; then
+    dnf remove ophcrack\* -y
+  fi
+  if dnf list installed | grep -qw wireshark; then
+    dnf remove wireshark\* -y
+  fi
+  if dnf list installed | grep -qw ettercap; then
+    dnf remove ettercap\* -y
+  fi
+  if dnf list installed | grep -qw cowsay; then
+    dnf remove cowsay\* -y
+  fi
+  if dnf list installed | grep -qw logkeys; then
+    dnf remove logkeys\* -y
+  fi
+  if dnf list installed | grep -qw telnet; then
+    dnf remove telnet\* -y
+  fi
+  if dnf list installed | grep -qw john; then
+    dnf remove john\* -y
+  fi
+  if dnf list installed | grep -qw hydra; then
+    dnf remove hydra\* -y
+  fi
+  if dnf list installed | grep -qw zenmap; then
+    dnf remove zenmap\* -y
+  fi
+  if dnf list installed | grep -qw xcowsay; then
+    dnf remove xcowsay\* -y
+  fi
+  if dnf list installed | grep -qw deluge; then
+    dnf remove deluge\* -y
+  fi
+  if dnf list installed | grep -qw freeciv; then
+    dnf remove freeciv\* -y
+  fi
+  if dnf list installed | grep -qw minetest; then
+    dnf remove minetest\* -y
+  fi
+  if dnf list installed | grep -qw transmission; then
+    dnf remove transmission\* -y
+  fi
+  if dnf list installed | grep -qw qbittorrent; then
+    dnf remove qbittorrent\* -y
+  fi
+  if dnf list installed | grep -qw 4g8; then
+    dnf remove 4g8\* -y
+  fi
+  if dnf list installed | grep -qw sqlmap; then
+    dnf remove sqlmap\* -y
+  fi
+  if dnf list installed | grep -qw gobuster; then
+    dnf remove gobuster\* -y
+  fi
+  if dnf list installed | grep -qw bind9; then
+    dnf remove bind9\* -y
+  fi
+  if dnf list installed | grep -qw empire; then
+    dnf remove empire\* -y
+  fi
+  if dnf list installed | grep -qw recon-ng; then
+    dnf remove recon-ng\* -y
+  fi
+  dnf autoremove -y
+fi
+
 
 # === Kernel ===
 echo "Updating Kernel..."
