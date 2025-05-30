@@ -358,6 +358,9 @@ if command -v apt &> /dev/null; then
   if dpkg -l | grep -qw recon-ng; then
     apt purge recon-ng\* -y
   fi
+  if dpkg -l | grep -qw snort; then
+    apt purge snort\* -y
+  fi
   apt autoremove -y
 fi
 
@@ -436,6 +439,9 @@ if command -v dnf &> /dev/null; then
   fi
   if dnf list installed | grep -qw recon-ng; then
     dnf remove recon-ng\* -y
+  fi
+  if dnf list installed | grep -qw snort; then
+    dnf remove snort\* -y
   fi
   dnf autoremove -y
 fi
