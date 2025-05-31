@@ -81,3 +81,10 @@ ls -l /etc/passwd /etc/group /etc/shadow
 
 echo "underprivalidged user or group may own a configuaation file:"
 ls -l /etc/ | awk '{print $3":"$4,$9}' | grep -v "^root:root" | grep -v "^:"
+
+sudo yum install realmd sssd adcli oddjob oddjob-mkhomedir samba-common-tools krb5-workstation
+
+sudo realm discover REPO.INTERNAL
+
+sudo realm join --user=Administrator REPO.INTERNAL
+
